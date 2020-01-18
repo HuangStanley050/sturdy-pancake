@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon ./server.js"
   },
   "keywords": [],
   "author": "",
@@ -15,6 +16,7 @@
     "graphql": "^14.5.8"
   },
   "devDependencies": {
+    "graphql-playground-middleware-express": "^1.7.12",
     "nodemon": "^2.0.2"
   }
 }
