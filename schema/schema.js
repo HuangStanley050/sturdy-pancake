@@ -51,6 +51,14 @@ const CompanyType = new GraphQLObjectType({
 const mutation = new GraphQLObjectType({
   name: "Mutation",
   fields: {
+    deleteUser: {
+      type: UserType,
+      args: { id: { type: new GraphQLNonNull(GraphQLString) } },
+      resolve: async (parentValue, args) => {
+        const { id } = args;
+        return await User.findByIdAndRemove({ _id: id });
+      }
+    },
     addUser: {
       type: UserType,
       args: {
