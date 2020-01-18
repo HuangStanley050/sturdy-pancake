@@ -51,6 +51,29 @@ const CompanyType = new GraphQLObjectType({
 const mutation = new GraphQLObjectType({
   name: "Mutation",
   fields: {
+    editUser: {
+      type: UserType,
+      args: {
+        id: { type: new GraphQLNonNull(GraphQLString) },
+        firstName: {
+          type: GraphQLString
+        },
+        age: {
+          type: GraphQLInt
+        },
+        companyId: {
+          type: GraphQLString
+        }
+      },
+      resolve: async (parentValue, args) => {
+        const { id, firstName, companyId, age } = args;
+        const update = {};
+        if (firstName) update.firstName = firstName;
+        if (age) update.age = age;
+        if (companyId) update.companyId = companyId;
+        return await User.findOneAndUpdate({ _id: id }, update, { new: true });
+      }
+    },
     deleteUser: {
       type: UserType,
       args: { id: { type: new GraphQLNonNull(GraphQLString) } },
