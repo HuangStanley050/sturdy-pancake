@@ -1,17 +1,42 @@
 const graphql = require("graphql");
-const { GraphQLObjectType, GraphQLString, GraphQLInt, GraphQLSchema } = graphql;
+const {
+  GraphQLObjectType,
+  GraphQLString,
+  GraphQLInt,
+  GraphQLSchema,
+  GraphQLList
+} = graphql;
 const User = require("../models/User");
+const Company = require("../models/Company");
 
-const users = [
-  { id: "23", firstName: "Bill", age: 33 },
-  { id: "22", firstName: "Alex", age: 44 }
-];
+const CompanyType = new GraphQLObjectType({
+  name: "Company",
+  fields: () => ({
+    id: { type: GraphQLString },
+    name: { type: GraphQLString },
+    description: { type: GraphQLString },
+    users: {
+      type: new GraphQLList(UserType),
+      resolve(parentValue, args) {
+        return null;
+      }
+    }
+  })
+});
+
 const UserType = new GraphQLObjectType({
   name: "User",
   fields: {
-    //id: { type: GraphQLString },
+    id: { type: GraphQLString },
     firstName: { type: GraphQLString },
-    age: { type: GraphQLInt }
+    age: { type: GraphQLInt },
+    company: {
+      type: CompanyType,
+      resolve: async (parentValue, args) => {
+        const { companyId } = parentValue;
+        return await Company.findOne({ _id: companyId });
+      }
+    }
   }
 });
 
