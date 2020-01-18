@@ -19,6 +19,7 @@ const UserType = new GraphQLObjectType({
       type: CompanyType,
       resolve: async (parentValue, args) => {
         const { companyId } = parentValue;
+        //console.log(parentValue);
         return await Company.findOne({ _id: companyId });
       }
     }
@@ -34,8 +35,13 @@ const CompanyType = new GraphQLObjectType({
     users: {
       type: new GraphQLList(UserType),
       resolve: async (parentValue, args) => {
-        const { companyId } = parentValue;
-        return "haha";
+        const companyId = parentValue._id;
+
+        let results = await Company.findOne({ _id: companyId })
+          .populate("userId")
+          .exec();
+        //console.log(results.userId);
+        return results.userId;
       }
     }
   })
