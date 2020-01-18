@@ -1,6 +1,7 @@
 const graphql = require("graphql");
 const {
   GraphQLObjectType,
+  GraphQLNonNull,
   GraphQLString,
   GraphQLInt,
   GraphQLSchema,
@@ -47,6 +48,31 @@ const CompanyType = new GraphQLObjectType({
   })
 });
 
+const mutation = new GraphQLObjectType({
+  name: "Mutation",
+  fields: {
+    addUser: {
+      type: UserType,
+      args: {
+        firstName: { type: new GraphQLNonNull(GraphQLString) },
+        age: { type: new GraphQLNonNull(GraphQLInt) },
+        companyId: { type: GraphQLString }
+      },
+      resolve: async (parentValue, args) => {
+        const { email, firstName, companyId } = args;
+
+        const newUser = new User({
+          email,
+          firstName,
+          companyId
+        });
+        const result = await newUser.save();
+        return result;
+      }
+    }
+  }
+});
+
 const RootQuery = new GraphQLObjectType({
   name: "RootQueryType",
   fields: {
@@ -68,5 +94,6 @@ const RootQuery = new GraphQLObjectType({
 });
 
 module.exports = new GraphQLSchema({
-  query: RootQuery
+  query: RootQuery,
+  mutation
 });
