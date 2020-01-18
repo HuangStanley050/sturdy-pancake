@@ -9,24 +9,9 @@ const {
 const User = require("../models/User");
 const Company = require("../models/Company");
 
-const CompanyType = new GraphQLObjectType({
-  name: "Company",
-  fields: () => ({
-    id: { type: GraphQLString },
-    name: { type: GraphQLString },
-    description: { type: GraphQLString },
-    users: {
-      type: new GraphQLList(UserType),
-      resolve(parentValue, args) {
-        return null;
-      }
-    }
-  })
-});
-
 const UserType = new GraphQLObjectType({
   name: "User",
-  fields: {
+  fields: () => ({
     id: { type: GraphQLString },
     firstName: { type: GraphQLString },
     age: { type: GraphQLInt },
@@ -37,12 +22,35 @@ const UserType = new GraphQLObjectType({
         return await Company.findOne({ _id: companyId });
       }
     }
-  }
+  })
+});
+
+const CompanyType = new GraphQLObjectType({
+  name: "Company",
+  fields: () => ({
+    id: { type: GraphQLString },
+    name: { type: GraphQLString },
+    description: { type: GraphQLString },
+    users: {
+      type: new GraphQLList(UserType),
+      resolve: async (parentValue, args) => {
+        const { companyId } = parentValue;
+        return "haha";
+      }
+    }
+  })
 });
 
 const RootQuery = new GraphQLObjectType({
   name: "RootQueryType",
   fields: {
+    company: {
+      type: CompanyType,
+      args: { id: { type: GraphQLString } },
+      resolve: async (parentValue, args) => {
+        return await Company.findOne({ _id: args.id });
+      }
+    },
     user: {
       type: UserType,
       args: { id: { type: GraphQLString } },
